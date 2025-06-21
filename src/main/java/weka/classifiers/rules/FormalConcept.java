@@ -1,8 +1,9 @@
 package weka.classifiers.rules;
 
+import java.io.Serializable;
 import java.util.Set;
 
-public class FormalConcept {
+public class FormalConcept implements Serializable {
     private final Set<Integer> extent;
     private final Set<Integer> intent;
 
@@ -11,11 +12,7 @@ public class FormalConcept {
         this.intent = intent;
     }
 
-    public Set<Integer> getExtent() {
-        return extent;
-    }
-
-    public Set<Integer> getIntent() {
-        return intent;
-    }
+    public Set<Integer> getExtent() { return extent; }
+    public Set<Integer> getIntent() { return intent; }
 }
+

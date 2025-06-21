@@ -1,14 +1,11 @@
 package weka.classifiers.rules;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.*;
 import weka.core.Instance;
+import java.util.*;
 
 public class GrandRuleExtractor {
-    private final FormalContext context;
     private final ConceptLattice lattice;
+    private final FormalContext context;
 
     public GrandRuleExtractor(ConceptLattice lattice, FormalContext context) {
         this.lattice = lattice;
@@ -17,33 +14,35 @@ public class GrandRuleExtractor {
 
     public List<GrandRule> extractRules() {
         List<GrandRule> rules = new ArrayList<>();
-
         for (FormalConcept concept : lattice.getConcepts()) {
-            boolean[] conditions = new boolean[context.getAttributeCount()];
+            if (concept.getIntent().isEmpty()) continue;
 
-            for (Integer index : concept.getIntent()) {
-                conditions[index] = true;
+            Map<Integer, Double> conditions = new HashMap<>();
+            for (Integer attrIdx : concept.getIntent()) {
+                conditions.put(attrIdx, avgAttributeValue(attrIdx, concept.getExtent()));
             }
 
-            double predictedClass = determineClass(concept.getExtent());
-            rules.add(new GrandRule(conditions, predictedClass));
+            double predClass = majorityClass(concept.getExtent());
+            rules.add(new GrandRule(conditions, predClass));
         }
-
         return rules;
     }
 
-    private double determineClass(Set<Integer> extent) {
-        Map<Double, Integer> classCounts = new HashMap<>();
+    private double avgAttributeValue(int attrIdx, Set<Integer> extent) {
+        double sum = 0;
+        for (int idx : extent)
+            sum += context.getInstance(idx).value(attrIdx);
+        return sum / extent.size();
+    }
 
-        for (Integer i : extent) {
-            Instance inst = context.getInstance(i);
-            double classVal = inst.classValue();
-            classCounts.put(classVal, classCounts.getOrDefault(classVal, 0) + 1);
+    private double majorityClass(Set<Integer> extent) {
+        Map<Double, Integer> counts = new HashMap<>();
+        for (int idx : extent) {
+            double cls = context.getInstance(idx).classValue();
+            counts.put(cls, counts.getOrDefault(cls, 0) + 1);
         }
-
-        return classCounts.entrySet().stream()
+        return counts.entrySet().stream()
                 .max(Map.Entry.comparingByValue())
-                .map(Map.Entry::getKey)
-                .orElse(0.0);
+                .orElseThrow(() -> new IllegalStateException("Aucune classe majoritaire trouvée")).getKey();
     }
 }

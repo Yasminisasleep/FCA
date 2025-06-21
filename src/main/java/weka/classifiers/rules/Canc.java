@@ -3,9 +3,9 @@ package weka.classifiers.rules;
 import weka.classifiers.AbstractClassifier;
 import weka.core.*;
 
-public class Grand extends AbstractClassifier {
+public class Canc extends AbstractClassifier {
 
-    private GrandClassifierModel model;
+    private CancClassifierModel model;
 
     @Override
     public void buildClassifier(Instances data) throws Exception {
@@ -17,7 +17,7 @@ public class Grand extends AbstractClassifier {
         FormalContext context = new FormalContext(data);
         ConceptLattice lattice = new ConceptLattice(context);
 
-        model = new GrandClassifierModel(lattice.getConcepts(), data);
+        model = new CancClassifierModel(lattice.getConcepts(), data);
     }
 
     @Override
@@ -43,6 +43,6 @@ public class Grand extends AbstractClassifier {
     }
 
     public static void main(String[] args) {
-        runClassifier(new Grand(), args);
+        runClassifier(new Canc(), args);
     }
 }

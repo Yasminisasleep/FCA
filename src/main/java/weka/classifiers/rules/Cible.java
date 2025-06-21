@@ -3,21 +3,20 @@ package weka.classifiers.rules;
 import weka.classifiers.AbstractClassifier;
 import weka.core.*;
 
-public class Grand extends AbstractClassifier {
+public class Cible extends AbstractClassifier {
 
-    private GrandClassifierModel model;
+    private CibleClassifierModel model;
 
     @Override
     public void buildClassifier(Instances data) throws Exception {
         getCapabilities().testWithFail(data);
-
         data = new Instances(data);
         data.deleteWithMissingClass();
 
         FormalContext context = new FormalContext(data);
         ConceptLattice lattice = new ConceptLattice(context);
 
-        model = new GrandClassifierModel(lattice.getConcepts(), data);
+        model = new CibleClassifierModel(lattice.getConcepts(), data);
     }
 
     @Override
@@ -43,6 +42,6 @@ public class Grand extends AbstractClassifier {
     }
 
     public static void main(String[] args) {
-        runClassifier(new Grand(), args);
+        runClassifier(new Cible(), args);
     }
 }
